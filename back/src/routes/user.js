@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-
+const createUser = require("../controller/user")
 router.get("",(req,res)=>{
     res.json({
         status:200,
@@ -15,8 +15,6 @@ router.get("",(req,res)=>{
     })
 })
 
-router.post('',(req,res)=>{
-    console.log("控制器处理逻辑");
-})
+router.post('',createUser)
 
 module.exports=router
