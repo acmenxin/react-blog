@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const {createUser} = require("../controller/user")
+const {createUser,loginUser} = require("../controller/user")
 // router.get("",(req,res)=>{
 //     res.json({
 //         status:200,
@@ -15,5 +15,6 @@ const {createUser} = require("../controller/user")
 //     })
 // })
 router.post('/',createUser) 
+router.post('/login',loginUser) 
 
 module.exports=router

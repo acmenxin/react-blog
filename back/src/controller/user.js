@@ -1,11 +1,11 @@
 //user控制器
 const HttpException = require("../exception/httpException");
-const validateCreateUser = require("../utils/validate/user.validate")
-const md5Password = require("../utils/md5")
+const {validateCreateUser,validateLoginUser} = require("../utils/validate/user.validate")
+const {md5Password,matchPWD} = require("../utils/md5")
 const User = require("../model/user")
+const {sign} = require("../utils/jwt")
 //用户注册
 const createUser = async (req,res,next)=>{
-    console.log(req.body,"req.body");
         try {
         //1获取提交内容
         let {username,password,email} = req.body.user;
@@ -34,7 +34,6 @@ const createUser = async (req,res,next)=>{
             password:md5PWD,
             email
         })
-
         //5.3.1响应数据处理
         let data = {}
         data.username=username;
@@ -51,5 +50,31 @@ const createUser = async (req,res,next)=>{
         }
 }
 //用户登录
-
-module.exports={createUser}
+const loginUser = async(req,res,next)=>{
+    try {
+      //拿到数据
+      let {email,password} = req.body.user;
+      //数据校验
+      let {error,validate} = validateLoginUser(email,password)
+      if(!validate){
+        throw new HttpException(401,"用户数据校验失败",error)
+      }
+      //业务数据校验
+      const user = await User.findByPk(email) //拿到整条数据
+      //拿到数据库中存储的密码和登录密码进行匹配
+      let DbPassword = user.dataValues.password
+      const isMatch =await matchPWD(DbPassword,password)
+      if(!isMatch){
+        throw new HttpException(401,"用户密码输入错误","password is not matched")
+      }
+       delete user.dataValues.password; //删掉password这个敏感信息
+       user.dataValues.token = await sign(user.dataValues.username,user.dataValues.email)//加上token
+       return res.json({
+        data:user.dataValues
+       })
+    } catch (error) {
+        next(error)
+    }
+   
+}
+module.exports={createUser,loginUser}

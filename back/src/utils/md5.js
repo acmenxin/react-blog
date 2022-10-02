@@ -2,9 +2,14 @@ const md5 = require("md5")
 const SALT="salt"
 
 const md5Password = (password)=>{
-    return new Promise((resolve,reject)=>{
         const md5PWD=md5(password+SALT)
-        resolve(md5PWD)
-    })
+        return md5PWD
 }
-module.exports=md5Password
+const matchPWD= (DbPassword,LoginPassword)=>{
+        let loginpassword = md5Password(LoginPassword)
+        if(loginpassword===DbPassword){
+           return true
+        }
+        return false
+}
+module.exports={md5Password,matchPWD}
