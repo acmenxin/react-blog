@@ -1,15 +1,16 @@
 const validator = require("validator")
 // 用户注册---数据校验
 const validateCreateUser = (username,password,email)=>{
+    console.log("----------");
     let error={}
     if(validator.isEmpty(username)){
         error.username="username不能为空"
     }
     if(validator.isEmpty(password)){
-        error.username="password不能为空"
+        error.password="password不能为空"
     }
     if(validator.isEmpty(email)){
-        error.username="email不能为空"
+        error.email="email不能为空"
     }
     if(!validator.isEmpty(email)&&!validator.isEmail(email)){
         error.email="email格式不对"
