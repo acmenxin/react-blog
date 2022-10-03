@@ -77,4 +77,30 @@ const loginUser = async(req,res,next)=>{
     }
    
 }
-module.exports={createUser,loginUser}
+//用户获取
+const getUser = async(req,res,next)=>{
+    try {
+        //0. 路由接口验证需要
+        //1. 获取用户 req.user
+        const {email} = req.body.user;
+        //验证请求数据：email
+        //根据email，获取user这一整条数据
+        const user = await User.findByPk(email)
+        if(!user){
+            throw new HttpException(401,"用户不存在","user is not found")
+        }
+        //返回数据
+        let token = await sign(user.username,email)
+        delete user.dataValues.password;
+        user.dataValues.token =token;
+        return res.status(200)
+                  .json({
+                    status:1,
+                    message:"请求用户信息成功",
+                    data:user.dataValues
+                  })
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports={createUser,loginUser,getUser}

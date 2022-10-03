@@ -2,6 +2,7 @@ const HttpException = require("../exception/httpException");
 const {sign,decode} = require("../utils/jwt")
 const authMiddleware =async (req,res,next)=>{
     console.log(req.headers.authorization);
+    console.log("authMiddleware");
     //01 加签，获得token
     // const jwtSign =await sign("username","email")
     //02解签，用key
@@ -30,9 +31,6 @@ const authMiddleware =async (req,res,next)=>{
     } catch (error) { 
         //04 解签失败 token过期/失效
         return next(new HttpException(401,"Authorization token验证失败","token decode error"))
-    }
-    // const token = await decode(jwtSign)
-    // console.log(token);
-   
+    } 
 }
 module.exports = authMiddleware

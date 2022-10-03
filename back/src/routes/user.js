@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
-const {createUser,loginUser} = require("../controller/user")
+const authMiddleware = require("../middleware/authMiddleware")
+const {createUser,loginUser,getUser} = require("../controller/user")
 // router.get("",(req,res)=>{
 //     res.json({
 //         status:200,
@@ -16,5 +17,5 @@ const {createUser,loginUser} = require("../controller/user")
 // })
 router.post('/',createUser) 
 router.post('/login',loginUser) 
-
+router.get('/',authMiddleware,getUser) //先验证是否可以过authorization这关
 module.exports=router
