@@ -30,18 +30,17 @@ const createUser = async (req,res,next)=>{
         const md5PWD = await md5Password(password)
         //5.2 存储进数据库
         const user = await User.create({
-            username,
+            username:username,
             password:md5PWD,
-            email
+            email:email
         })
         //5.3.1响应数据处理
         let data = {}
         data.username=username;
         data.email=email
         //5.3成功=>res
-        
             console.log(user,"user");
-            res.json({
+           return res.json({
                data
             })
         
@@ -103,4 +102,39 @@ const getUser = async(req,res,next)=>{
         next(error)
     }
 }
-module.exports={createUser,loginUser,getUser}
+const updateUser = async(req,res,next)=>{
+    try {
+        const {email} = req.body.user;
+        const user = await User.findByPk(email);
+        if(!user){
+            throw new HttpException(401,"用户不存在","user is not found")
+        }
+        //获取请求带来的数据
+        const bodyUser = req.body.user;
+        if(!bodyUser){
+            throw new HttpException(401,"需要提交修改的数据","updateUser is not found")
+        }
+        //批量修改,指定条件.先找到email，然后修改所有数据库中email的数据
+        // let updateUser = await User.update({username,bio,avatar,password},{
+        //     where:email
+        // }
+
+        //是undefined不会修改成功，是null会修改成功
+        const username = bodyUser.username
+        const bio = bodyUser.bio
+        const avatar = bodyUser.avatar
+        const password = bodyUser.password?md5Password(bodyUser.password):undefined
+        let updateUser = await user.update({username,bio,avatar,password})
+        console.log(updateUser,"updateUser");
+        let token = await sign(updateUser.username,email)
+        delete updateUser.dataValues.password;
+        updateUser.dataValues.token = token;
+        return res.status(200)
+                  .json({
+                    data:updateUser.dataValues
+                  })
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports={createUser,loginUser,getUser,updateUser}

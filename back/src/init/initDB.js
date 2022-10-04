@@ -56,7 +56,7 @@ const initDB = async () => {
             // model => 同步到数据库
             initRelation();
             //自动同步所有模型；
-            await sequelize.sync({force:true})
+            await sequelize.sync({alter:true})
             resolve()
         } catch (error) {
             await dbConnection()
