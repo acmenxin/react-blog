@@ -21,7 +21,12 @@ const createUser = async (req,res,next)=>{
         if(existUser){
             throw new HttpException(401,"用户邮箱已存在","email has exist")
         }
-        const existUsername = await User.findOne({username:username});
+        //4.2验证username是否存在
+        const existUsername = await User.findOne({
+            where:{
+                username
+            }
+        });
         if(existUsername){
             throw new HttpException(401,"用户名称已存在","username has exist")
         }
@@ -81,7 +86,7 @@ const getUser = async(req,res,next)=>{
     try {
         //0. 路由接口验证需要
         //1. 获取用户 req.user
-        const {email} = req.body.user;
+        const {email} = req.user;
         //验证请求数据：email
         //根据email，获取user这一整条数据
         const user = await User.findByPk(email)
@@ -102,9 +107,10 @@ const getUser = async(req,res,next)=>{
         next(error)
     }
 }
+//用户更新
 const updateUser = async(req,res,next)=>{
     try {
-        const {email} = req.body.user;
+        const {email} = req.user;
         const user = await User.findByPk(email);
         if(!user){
             throw new HttpException(401,"用户不存在","user is not found")
@@ -126,7 +132,9 @@ const updateUser = async(req,res,next)=>{
         const password = bodyUser.password?md5Password(bodyUser.password):undefined
         let updateUser = await user.update({username,bio,avatar,password})
         console.log(updateUser,"updateUser");
+        //生成新的加密token
         let token = await sign(updateUser.username,email)
+        //删除敏感信息
         delete updateUser.dataValues.password;
         updateUser.dataValues.token = token;
         return res.status(200)
