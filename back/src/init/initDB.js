@@ -4,6 +4,9 @@ const  Artical = require("../model/artical")
 const  Tag = require("../model/Tag")
 const  Comment = require("../model/Comment")
 const sequelize = require("../db/sequelize")
+process.on('unhandledRejection', error => {
+    console.log('unhandledRejection', error);
+  });
 // 定义关联关系
 const initRelation = ()=>{
     User.hasMany(Artical,{
@@ -49,7 +52,7 @@ const initRelation = ()=>{
 
 }
 const initDB = async () => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve,reject) => {
         try {
             await dbConnection()
             //初始化=>模型 - 建表 ：模型关系 - 表关系
@@ -59,7 +62,6 @@ const initDB = async () => {
             await sequelize.sync({alter:true})
              resolve()
         } catch (error) {
-            await dbConnection()
             reject(error)
         }
     })

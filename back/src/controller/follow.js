@@ -66,4 +66,50 @@ const cancelController = async(req,res,next)=>{
             messsage:"取关成功"
          })
 }
-module.exports = {followController,cancelController}
+//判断当前登录的用户是否关注了该作者
+const getFollowers = async (req,res,next)=>{
+  //场景：查看作者主页中的粉丝
+    try {
+      const username = req.params.username;
+      //查看该作者是否在关联表中
+      const userAuthor = await User.findOne({
+        where:{
+          username
+        },
+        include:['followors'] //通过followors中间表查询user1,user2
+      })
+      console.log(userAuthor,"userAuthor");
+      if(!userAuthor){
+        throw new HttpException(404,"作者的用户名不存在","user with this username not found")
+      }
+
+      const {email} = req.user;
+      let following = false;
+      let followers = []
+      for(const user of userAuthor.followors){
+        if(email===user.dataValues.followors){
+          following=true;
+        }
+        delete user.dataValues.password;
+        delete user.dataValues.Followers;
+        followers.push(user.dataValues)
+      }
+
+      const profile ={
+        username:userAuthor.username,
+        bio:userAuthor.bio,
+        avatar:userAuthor.avatar,
+        following,
+        followers
+      }
+      res.status(200)
+      .json({
+        status:1,
+        messsage:'获取成功',
+        data:profile
+      })
+    } catch (error) {
+      next(error)
+    }
+}
+module.exports = {followController,cancelController,getFollowers}
