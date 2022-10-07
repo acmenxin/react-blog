@@ -4,6 +4,7 @@ const User = require("../model/user")
 const randomSlug = require("../utils/slug")
 const Article = require("../model/artical")
 const Tag = require("../model/Tag")
+//创建文章
 const createArticle = async(req,res,next)=>{
     try {
         //在路由的时候就登录验证token,然后才能使用该控制器
@@ -29,6 +30,7 @@ const createArticle = async(req,res,next)=>{
             body,
             UserEmail:email
         })
+        // console.log(article.__proto__,"__proto__");
         // console.log(article,"article");
 
         //遍历文章的每一个标签：只存贮新的标签，存储之间关系
@@ -50,7 +52,7 @@ const createArticle = async(req,res,next)=>{
         }
 
         //返回文章数据（文章/标签/作者）
-        // 根据唯一标识slug获取该文章（包含文章对应的标签）
+        // 根据唯一标识slug获取该文章（包含返回文章对应的标签）
         article = await Article.findByPk(slug,{include:Tag})
         // console.log(article.dataValues.Tags,"article");
         //先将返回的标签优化
@@ -75,4 +77,138 @@ const createArticle = async(req,res,next)=>{
         next(error)
     }
 }
-module.exports={createArticle}
+//获取文章
+const getArticle = async(req,res,next)=>{
+    try {
+        //01获取数据
+        const slug = req.params.slug;
+        //02数据校验
+        let article = await Article.findByPk(slug)
+        if(!article){
+            throw new HttpException(401,"文章不存在","article not found")
+        }
+        //03获取文章、标签、作者信息
+        // console.log(article,"article1");
+        //同时获取文章关联的标签  使用include关联查询
+        article = await Article.findByPk(slug,{include:Tag})
+        // console.log(article,"article2");
+        //处理tags,变成数组的样式展示
+        const tags = []
+        for(const tag of article.dataValues.Tags){
+            tags.push(tag.name)
+        }
+        article.dataValues.tags = tags
+
+        //获取文章作者
+        let  author = await article.getUser()
+        article.dataValues.author=author
+        //处理作者隐私信息
+        delete article.dataValues.Tags;
+        delete author.dataValues.password;
+        delete article.dataValues.UserEmail
+        //04返回数据
+        return res.status(200)
+                .json({
+                    message:"获取文章信息成功",
+                    data:article.dataValues
+                })
+    } catch (error) {
+        next(error)
+    }
+}
+//更新文章
+const updataArticle = async(req,res,next)=>{
+    try {
+        //01 获取参数
+        const slug = req.params.slug;
+        //判断文章是否存在
+        let article = await Article.findByPk(slug)
+        if(!article){
+            throw new HttpException(401,"文章不存在","article not found")
+        }
+        //判断是否是作者本人修改文章
+        let authorEmail = article.UserEmail;
+        let loginEmail = req.user.email;
+        if(authorEmail!==loginEmail){
+            throw new HttpException(401,"只有作者账号才能修改文章","only author can update the article")
+        }
+        //02 获取带标签的文章
+        article = await Article.findByPk(slug,{include:Tag})
+        // console.log(article,"article");
+        //03 获取文章的更新内容（body中）
+        const {title,description,body,tags} = req.body.article;
+        //04 更新原article操作
+        const updateArticle = await article.update({title,description,body})
+        //05 获取作者信息
+        const {email} = req.user;
+        const author = await User.findByPk(email);
+        //06 数据处理---更新数据
+        let newtags = []
+         for(let tag of tags){
+            newtags.push(tag)
+        }
+          //遍历更新时文章的每一个标签：只存贮新的标签，存储之间关系
+          if(newtags.length>0){
+            //遍历每一个标签
+            for (const tag of newtags) {
+                let existTag = await Tag.findByPk(tag)
+                if(!existTag){ //如果不存在
+                    //存储标签
+                   let newTag = await Tag.create({
+                        name:tag
+                    })
+                    console.log(newTag,"newTag");
+                    //存储新标签和文章的关系
+                   await updateArticle.addTag(newTag)
+                }else{ //老标签
+                   await updateArticle.addTag(existTag)
+                }
+            }
+        }
+        updateArticle.dataValues.tags = newtags
+        delete updateArticle.dataValues.Tags;
+        delete author.dataValues.password;
+        delete updateArticle.dataValues.UserEmail
+        return res.status(200)
+        .json({
+            message:"更新成功",
+            data:updateArticle.dataValues
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+//删除文章
+const destoryArticle = async(req,res,next)=>{
+    try {
+    //01获取参数slug
+    const slug = req.params.slug;
+    //02验证文章是否存在
+    let article = await Article.findByPk(slug)
+    if(!article){
+        throw new HttpException(401,"文章不存在","article not found")
+    }
+    //03验证用户权限（只有作者能删除）
+    let authorEmail = article.UserEmail;
+    let loginEmail = req.user.email;
+    if(authorEmail!==loginEmail){
+        throw new HttpException(401,"只有作者账号才能删除文章","only author can update the article")
+    }
+    //04删除文章
+    const destoryslug = await Article.destroy({
+       where:{
+          slug
+       }
+   });
+   //05返回数据
+   return res.status(200)
+             .json({
+               status:1,
+               message:"删除文章成功",
+               data:article
+             })
+   } catch (error) {
+       next(error)
+   }  
+}
+module.exports={createArticle,getArticle,updataArticle,destoryArticle}
