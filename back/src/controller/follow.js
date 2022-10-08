@@ -3,7 +3,7 @@ const User = require("../model/user")
 //添加关注
 const followController =async (req,res,next)=>{
     try {
-      console.log(req.user,"req");//打印不出来？
+      // console.log(req.user,"req");
       const username = req.params.username;
       const userA = await User.findOne({
         where:{

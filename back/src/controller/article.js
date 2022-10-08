@@ -274,4 +274,5 @@ const getFollowerArticle = async(req,res,next)=>{
         next(error)
     }
 }
+
 module.exports={createArticle,getArticle,updataArticle,destoryArticle,getFollowerArticle}
