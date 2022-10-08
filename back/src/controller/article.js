@@ -3,7 +3,8 @@ const validateCreateArticle = require("../utils/validate/article.validate")
 const User = require("../model/user")
 const randomSlug = require("../utils/slug")
 const Article = require("../model/artical")
-const Tag = require("../model/Tag")
+const Tag = require("../model/Tag");
+const sequelize = require("../db/sequelize");
 //创建文章
 const createArticle = async(req,res,next)=>{
     try {
@@ -211,4 +212,66 @@ const destoryArticle = async(req,res,next)=>{
        next(error)
    }  
 }
-module.exports={createArticle,getArticle,updataArticle,destoryArticle}
+//获取关注作者们的文章
+const getFollowerArticle = async(req,res,next)=>{
+    try {
+        //获取登录用户
+        const fansEmail = req.user.email;
+        //获取登陆用户关注的作者
+        const query = `SELECT userEmail FROM followers WHERE followorEmail = "${fansEmail}" `
+        const followAuthors = await sequelize.query(query) //是个email数组
+        //验证是否有关注的作者 :如果没有的话直接返回空数组
+        if(followAuthors[0].length==0){
+            return res.status(200)
+            .json({
+                statu:1,
+                message:"获取关注文章成功",
+                data:[]
+            })
+        }
+        //有的话 => 先获取所有作者email [email1,email2]
+        let followAuthorEmails =[]
+        for (const item of followAuthors[0]) {
+            followAuthorEmails.push(item.userEmail)
+        }
+        // console.log(followAuthorEmails,"followAuthorEmails");
+        //再获取作者文章
+        let {count,rows} = await Article.findAndCountAll({
+            distinct:true,
+            where:{
+                userEmail:followAuthorEmails //可以直接等于一个数组
+            },
+            include:[Tag,User]
+        })
+        // console.log(result,"result");  count:1,rows:[]
+        //处理每一个作者的每一篇文章
+        const articles = []
+        for(const t of rows){
+            // console.log(t,"t");
+            //处理tags标签
+            const tags = []
+            for (const tag of t.dataValues.Tags) {
+                tags.push(tag.name)
+            }
+            t.dataValues.tags= tags;
+            //处理用户信息
+            let author = t.User
+            // console.log(author,"author");
+            delete author.dataValues.password
+            delete t.dataValues.UserEmail
+            delete t.dataValues.Tags
+            t.dataValues.author = author
+            //每一篇文章信息都存进数组中
+            articles.push(t.dataValues)
+        }
+        console.log(articles,"articles");
+        return res.status(200)
+                  .json({
+                    message:"获取成功",
+                    data:articles
+                  })
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports={createArticle,getArticle,updataArticle,destoryArticle,getFollowerArticle}
