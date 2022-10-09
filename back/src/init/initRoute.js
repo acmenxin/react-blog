@@ -4,6 +4,7 @@ const followRoute = require("../routes/follow")
 const tagRoute = require("../routes/tag")
 const articleRoute = require("../routes/article")
 const favoriteRoute = require("../routes/favorite")
+const commentRoute = require("../routes/comment")
 //测试生成jwt，使用中间件
 // const authMiddleware = require("../middleware/authMiddleware")
 const initRoute = (app)=>{
@@ -16,5 +17,6 @@ const initRoute = (app)=>{
     app.use("/api/v1/tags",tagRoute)
     app.use("/api/v1/articles",articleRoute)
     app.use("/api/v1/favorites",favoriteRoute)
+    app.use("/api/v1/comments",commentRoute)
 }
 module.exports = initRoute

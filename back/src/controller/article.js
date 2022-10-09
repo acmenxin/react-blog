@@ -102,11 +102,27 @@ const getArticle = async(req,res,next)=>{
 
         //获取文章作者
         let  author = await article.getUser()
+        //喜欢信息，喜欢数量---
+        const countFavoriteUsers = await article.countUsers()
+        const favoriteUsers = await article.getUsers()
+        // console.log(favoriteUsers,"favoriteUsers");
+        let allFavoriteEmail = []
+        for (const user of favoriteUsers) {
+            allFavoriteEmail.push(user.email)
+        }
+        let isFavorite = false;
+        if(req.user){
+            let loginEmail = req.user.email;
+            isFavorite = allFavoriteEmail.includes(loginEmail)
+        }
+        
         article.dataValues.author=author
         //处理作者隐私信息
         delete article.dataValues.Tags;
         delete author.dataValues.password;
-        delete article.dataValues.UserEmail
+        delete article.dataValues.UserEmail;
+        article.dataValues.favoriteCount = countFavoriteUsers; //喜欢数量
+        article.dataValues.favorited = isFavorite;//是否喜欢
         //04返回数据
         return res.status(200)
                 .json({
