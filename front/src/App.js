@@ -14,12 +14,15 @@ class App extends PureComponent{
     return(
       <div>
       <Header />
-      <Suspense fallback={<p>loading,请等等</p>}/>
+      
+      <Suspense fallback={<h2>Loading..</h2>}>
       <Switch>
       <Route path="/" component={Home} exact/>
       <Route path="/login" component={Login} />
       <Route path="/regist" component={Regist} />
       </Switch>
+      </Suspense>
+
       </div>
     )
   }
