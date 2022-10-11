@@ -34,7 +34,7 @@ class Regist extends PureComponent{
     e.preventDefault()
     // console.log(this.state);
     //网络接口请求 ： 注册
-    // this.props.onSubmitUser(this.state)
+    this.props.onSubmitUser({email,username,password})
   }
     render(){
       const {email,username,password} = this.props
@@ -43,7 +43,7 @@ class Regist extends PureComponent{
              <div className="row">
               <div className="col-md-6 offset-md-3 col-xs-12">
               <h1>注册</h1>
-              <form onSubmit={this.onSubmitForm()}>
+              <form onSubmit={this.onSubmitForm(email,username,password)}>
                <fieldset className='form-group'>
                 <input type="text" 
                   className="form-control form control-lg"
@@ -85,7 +85,8 @@ const mapDispatchToProps = dispatch=>{
   return{
     onEmailChange:(key,value)=>dispatch(action.registUpdate(key,value)),
     onUsernameChange:(key,value)=>dispatch(action.registUpdate(key,value)),
-    onPasswordChange:(key,value)=>dispatch(action.registUpdate(key,value))
+    onPasswordChange:(key,value)=>dispatch(action.registUpdate(key,value)),
+    onSubmitUser:(user)=>dispatch(action.registSubmit(user))
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Regist)
