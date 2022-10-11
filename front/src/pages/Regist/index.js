@@ -1,26 +1,28 @@
 import {PureComponent } from "react";
 import {Link} from "react-router-dom"
 import {connect} from "react-redux"
+import * as action from "../../actions/user"
 class Regist extends PureComponent{
-  state={
-    email:'',
-    username:'',
-    password:""
+  //组件自己的状态/组件公共的状态
+  constructor(props){
+    super(props)
+    console.log(props,"props");
   }
   changeEmail=(e)=>{
-    this.setState({
-      email:e.target.value
-    })
+    console.log("onEmailChange1");
+      this.props.onEmailChange("email",e.target.value)
   }
   changeUsername=(e)=>{
-    this.setState({
-      username:e.target.value
-    })
+    // this.setState({
+    //   username:e.target.value
+    // })
+    this.props.onUsernameChange("username",e.target.value)
   }
   changePassword=(e)=>{
-    this.setState({
-      password:e.target.value
-    })
+    // this.setState({
+    //   password:e.target.value
+    // })
+    this.props.onPasswordChange("password",e.target.value)
   }
   /**
    * 提交的时候为什么会整体刷新？
@@ -29,11 +31,13 @@ class Regist extends PureComponent{
    * thunk 做副作用操作的，可以在action中就捕获错误的
    * */
    onSubmitForm = ()=>(e)=>{
-    console.log(this.state);
+    e.preventDefault()
+    // console.log(this.state);
     //网络接口请求 ： 注册
     // this.props.onSubmitUser(this.state)
   }
     render(){
+      const {email,username,password} = this.props
         return(
             <div className="container page">
              <div className="row">
@@ -44,7 +48,7 @@ class Regist extends PureComponent{
                 <input type="text" 
                   className="form-control form control-lg"
                   placeholder="用户邮箱"
-                  value={this.state.email}
+                  value={email}
                   onChange={this.changeEmail}
                 />
                </fieldset>
@@ -52,7 +56,7 @@ class Regist extends PureComponent{
                 <input type="text" 
                   className="form-control form control-lg"
                   placeholder="用户名称"
-                  value={this.state.username}
+                  value={username}
                   onChange={this.changeUsername}
                 />
                </fieldset>
@@ -60,7 +64,7 @@ class Regist extends PureComponent{
                 <input type="password" 
                   className="form-control form control-lg"
                   placeholder="用户密码"
-                  value={this.state.password}
+                  value={password}
                   onChange={this.changePassword}
                 />
                </fieldset>
@@ -75,11 +79,13 @@ class Regist extends PureComponent{
     }
 }
 //数据
-const mapStateProps = state =>{
- console.log(state.user,"mapStateProps");
-}
+const mapStateToProps = state =>({...state.user}) //state为根reducer,找user对应的state
 //行为
-const mapDispatchProps = dispatch=>{
-
+const mapDispatchToProps = dispatch=>{
+  return{
+    onEmailChange:(key,value)=>dispatch(action.registUpdate(key,value)),
+    onUsernameChange:(key,value)=>dispatch(action.registUpdate(key,value)),
+    onPasswordChange:(key,value)=>dispatch(action.registUpdate(key,value))
+  }
 }
-export default connect(mapStateProps,mapDispatchProps)(Regist)
+export default connect(mapStateToProps,mapDispatchToProps)(Regist)

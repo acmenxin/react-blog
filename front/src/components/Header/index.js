@@ -4,10 +4,14 @@ import HeadeMenu from "./Menu";
 class Header extends Component{
     render(){
         return(
+            <nav className="navbar navbar-light">
+            <div className="container">
             <div>
              <Link to="/" >左侧</Link>
              <HeadeMenu currentUser={null} />
             </div>
+            </div>
+        </nav>
         )
     }
 }

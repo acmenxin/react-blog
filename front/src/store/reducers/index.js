@@ -5,5 +5,6 @@ import articleReducer from "./article"
 const rootReducer = combineReducers({
     user:userReducer,
     article:articleReducer
-})
+}) 
+console.log("rootReducer");
 export default rootReducer
