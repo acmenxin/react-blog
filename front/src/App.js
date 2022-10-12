@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { PureComponent,Suspense,lazy } from "react"
+import { connect } from "react-redux";
 import {Route,Switch} from "react-router-dom"
 import Header from "./components/Header";
 import Home from "./pages/Home"
@@ -13,8 +14,7 @@ class App extends PureComponent{
   render(){
     return(
       <div>
-      <Header />
-      
+      <Header currentUser={this.props.currentUser}/>
       <Suspense fallback={<h2>Loading..</h2>}>
       <Switch>
       <Route path="/" component={Home} exact/>
@@ -27,4 +27,5 @@ class App extends PureComponent{
     )
   }
 }
-export default App
+const mapStateToProps=state=>({currentUser:state.user.currentUser})
+export default connect(mapStateToProps,null)(App)

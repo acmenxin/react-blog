@@ -35,23 +35,17 @@ export const registSubmit =({email,username,password})=>{
       
     }
 }
+//登录提交
 export const loginSubmit =(email,password)=>{
     return async(dispatch,getState)=>{
         try {
         //网络请求
         const result = await request.user.login(email,password)
         //成功 1
-        if(result.status===1){
-            //跳转login页面
-        //  console.log("result",result); status: message: data:
-        }
-        //失败 0
-        else{
-            dispatch({type:constant.USER_REGIST_RESULT,result})
-        }
+            dispatch({type:constant.USER_LOGIN_RESULT,result})
         //失败出现错误 500
         } catch (error) {
-            dispatch({type:constant.USER_REGIST_RESULT,result:{message:error.message,errors:error.errors}})
+            dispatch({type:constant.USER_LOGIN_RESULT,result:{status:0,message:error.message,errors:error.errors}})
         }
       
     }

@@ -5,7 +5,7 @@ const HeadeMenu =memo( ({currentUser})=>{
         return(
             <ul className="nav navbar-nav pull-xs-right">
             <li className="nav-item">
-                <Link to='/' className="nav-link">主页</Link>
+                <Link to='/' className="nav-link">我的主页</Link>
              </li>
             <li className="nav-item">
                 <Link to='/article/new' className="nav-link">写作</Link>

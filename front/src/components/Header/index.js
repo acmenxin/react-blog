@@ -7,8 +7,8 @@ class Header extends Component{
             <nav className="navbar navbar-light">
             <div className="container">
             <div>
-             <Link to="/" >左侧</Link>
-             <HeadeMenu currentUser={null} />
+             <Link to="/" >MY-BLOG-版本1</Link>
+             <HeadeMenu currentUser={this.props.currentUser} />
             </div>
             </div>
         </nav>

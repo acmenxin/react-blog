@@ -20,6 +20,8 @@ const contentType = {
     FORM : "application/x-www-form-urlencoded; charset=UTF-8"
 };
 
+const token = getData("token")
+
 const getHeaders = ()=>{ 
     const token  = getData('token')
     console.log('token',token)

@@ -3,6 +3,8 @@ import {Link} from "react-router-dom"
 import {connect} from "react-redux"
 import * as action from "../../actions/user"
 import Errors from "../../components/Errors";
+import {store} from "../../store";
+import { push,replace } from "connected-react-router";
 class Login extends PureComponent{
     changeEmail=(e)=>{
         // console.log("onEmailChange1");
@@ -18,7 +20,7 @@ class Login extends PureComponent{
     e.preventDefault()
     // console.log(this.state);
     //网络接口请求 ： 注册
-    this.props.onSubmitUser({email,password})
+    this.props.onSubmitUser(email,password)
   }
     render(){
       const {email,password,errors} = this.props
@@ -59,10 +61,18 @@ class Login extends PureComponent{
             </div>
         )
     }
-    componentWillUnmount(){
-        //清理工作
-        this.props.onUnload()
-      }
+
+    //componentDidUpdate处理副作用监听,是否重定向到首页
+    componentDidUpdate(preProps){
+        if(this.props.redirect && this.props.redirect!==preProps.redirect){
+            // store.dispatch(push(this.props.redirect)) //直接push
+            store.dispatch(replace(this.props.redirect)) //栈替换
+        }
+    }
+    // componentWillUnmount(){
+    //     //清理工作
+    //     this.props.onUnload()
+    //   }
 }
 //数据
 const mapStateToProps = state =>({...state.user}) //state为根reducer,找user对应的state

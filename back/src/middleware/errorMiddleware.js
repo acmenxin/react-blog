@@ -4,7 +4,7 @@ const errorMiddleware = (error,req,res,next)=>{
     const errors = error.errors||"服务器端错误"
     res.status(status)
        .json({
-        code:0,
+        status:0,
         message:message,
         errors:errors
        })
