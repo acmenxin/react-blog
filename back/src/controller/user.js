@@ -46,7 +46,9 @@ const createUser = async (req,res,next)=>{
         //5.3成功=>res
             console.log(user,"user");
            return res.json({
-               data
+            status:1,
+            message:"注册成功",
+            data
             })
         
         } catch (error) {
@@ -74,7 +76,9 @@ const loginUser = async(req,res,next)=>{
        delete user.dataValues.password; //删掉password这个敏感信息
        user.dataValues.token = await sign(user.dataValues.username,user.dataValues.email)//加上token
        return res.json({
-        data:user.dataValues
+        data:user.dataValues,
+        status:1,
+        message:"登陆成功"
        })
     } catch (error) {
         next(error)

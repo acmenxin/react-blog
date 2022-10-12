@@ -84,6 +84,10 @@ class Regist extends PureComponent{
             </div>
         )
     }
+    componentWillUnmount(){
+      //清理工作
+      this.props.onUnload()
+    }
 }
 //数据
 const mapStateToProps = state =>({...state.user}) //state为根reducer,找user对应的state
@@ -93,7 +97,8 @@ const mapDispatchToProps = dispatch=>{
     onEmailChange:(key,value)=>dispatch(action.registUpdate(key,value)),
     onUsernameChange:(key,value)=>dispatch(action.registUpdate(key,value)),
     onPasswordChange:(key,value)=>dispatch(action.registUpdate(key,value)),
-    onSubmitUser:(user)=>dispatch(action.registSubmit(user))
+    onSubmitUser:(user)=>dispatch(action.registSubmit(user)),
+    onUnload:()=>dispatch(action.unload())
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Regist)
