@@ -1,5 +1,7 @@
 // 请求地址 restful 
-const baseURL = "http://localhost:3000/api/v1"
+const baseURL = "http://localhost:8000/api/v1"
+
+import {getData} from "../utils/localstorage.js"
 
 //请求方式
 const method = {
@@ -17,6 +19,19 @@ const contentType = {
     JSON : "application/json;charset=UTF-8",
     FORM : "application/x-www-form-urlencoded; charset=UTF-8"
 };
+
+const getHeaders = ()=>{ 
+    const token  = getData('token')
+    console.log('token',token)
+    const headers  ={
+        "Content-Type":contentType.JSON,
+        "Authorization":`Token ${token}`
+    }
+
+    return headers
+}
+
+
 // 请求方法
 // GET 
 const getRequest = async (url)=>{

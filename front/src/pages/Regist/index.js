@@ -2,14 +2,15 @@ import {PureComponent } from "react";
 import {Link} from "react-router-dom"
 import {connect} from "react-redux"
 import * as action from "../../actions/user"
+import Errors from "../../components/Errors";
 class Regist extends PureComponent{
   //组件自己的状态/组件公共的状态
-  constructor(props){
-    super(props)
-    console.log(props,"props");
-  }
+  // constructor(props){
+  //   super(props)
+  //   console.log(props,"props");
+  // }
   changeEmail=(e)=>{
-    console.log("onEmailChange1");
+    // console.log("onEmailChange1");
       this.props.onEmailChange("email",e.target.value)
   }
   changeUsername=(e)=>{
@@ -30,19 +31,25 @@ class Regist extends PureComponent{
    * 拿数据 进行数据校验，如果不行的话就要显示错误。 自己做校验。
    * thunk 做副作用操作的，可以在action中就捕获错误的
    * */
-   onSubmitForm = ()=>(e)=>{
+   onSubmitForm = (email,username,password)=>(e)=>{
     e.preventDefault()
     // console.log(this.state);
     //网络接口请求 ： 注册
     this.props.onSubmitUser({email,username,password})
   }
     render(){
-      const {email,username,password} = this.props
+      const {email,username,password,errors} = this.props
         return(
             <div className="container page">
              <div className="row">
               <div className="col-md-6 offset-md-3 col-xs-12">
               <h1>注册</h1>
+              <p className='text-xs-center'>
+              <Link to='/login'>
+                  有账号直接登录?
+              </Link>
+              </p>
+              <Errors errors={errors}/>
               <form onSubmit={this.onSubmitForm(email,username,password)}>
                <fieldset className='form-group'>
                 <input type="text" 

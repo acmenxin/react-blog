@@ -1,1 +1,2 @@
 export const USER_REGIST = "USER_REGIST"
+export const USER_REGIST_RESULT = "USER_REGIST_RESULT"
