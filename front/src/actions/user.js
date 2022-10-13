@@ -50,3 +50,6 @@ export const loginSubmit =(email,password)=>{
       
     }
 }
+export const userSyncResult=(user)=>{
+    return {type:constant.USER_SYNC_RESULT,result:user}
+}

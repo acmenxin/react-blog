@@ -39,6 +39,11 @@ const userReducer = (state=iniState,action)=>{
                 const {errors} = action.result
                 return {...state,errors}
             }
+            // localstorage只要有登录信息，就一直维护登陆状态
+        case constant.USER_SYNC_RESULT:
+            const currentUser = action.result;
+            console.log("初始状态更新");
+            return {...state,currentUser}
         default:
             break;
     }
