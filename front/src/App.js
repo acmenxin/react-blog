@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home"
 const Login = lazy(()=>import("./pages/Login"))
 const Regist= lazy(()=>import("./pages/Regist"))
+const Profile = lazy(()=>import("./pages/profile"))
 //问题： 页面加载慢
 // 代码分割 => 并行 动态加载=> react 懒加载
 // 页面无关的组件=>拆分成新的buddle=>当无关的组件被渲染的时候 才会下载到本地=>动态渲染
@@ -20,6 +21,7 @@ class App extends PureComponent{
       <Route path="/" component={Home} exact/>
       <Route path="/login" component={Login} />
       <Route path="/regist" component={Regist} />
+      <Route path="/profile/:username" component={Profile} />
       </Switch>
       </Suspense>
 

@@ -1,4 +1,4 @@
-import { PureComponent } from "react";
+import { PureComponent ,Component} from "react";
 import { connect } from "react-redux";
 import ButtonInfo from "./ButtonInfo"
 import * as action from "../../actions/profile"
@@ -11,20 +11,19 @@ import * as action from "../../actions/profile"
 //     following: false
 //   }
 // }
-class Profile extends PureComponent{
-  
-    constructor(){
-        super()
+class Profile extends Component{
+    constructor(props){
+        super(props)
         this.state={
-            username:this.match.params.username,
-
+            username:props.match.params.username,
         }
     }
     render(){
-        const {profile} = this.props
+        const {profile,currentUser} = this.props
+        console.log(profile,currentUser,"profile,current");
+        const isCurrentUser = currentUser && currentUser.username ===profile.username
         return( 
             <div className='profile-page'>
-
           {/* 1 用户信息 */}
           <div className='user-info'>
             <div className='container'>
@@ -36,7 +35,6 @@ class Profile extends PureComponent{
                   <p>{profile.bio}</p>
                   {/* 1.2 用户行为：自己页面 编辑设置； 不是自己页面 关注/取消关注 */}
                   {/*  登录用户（a） 和 profile用户(a||b) : 按钮显示*/}
-
                   <ButtonInfo 
                     isCurrentUser={isCurrentUser}
                     profile={profile}
@@ -50,7 +48,8 @@ class Profile extends PureComponent{
         )
     }
     componentDidMount(){
-        this.props.getProfile(this.state.username)
+        console.log("componentDidMount");
+        this.props.getProfile1(this.state.username)
     }
 }
 
@@ -58,8 +57,8 @@ const mapStateToProps =state=>({
     currentUser:state.user.currentUser,
     profile:state.profile
 })
-const mapDispatchToProps = dispatch({
-    getProfile:(username)=>dispatch(action.getProfile(username))
+const mapDispatchToProps = dispatch=>({
+    getProfile1:(username)=>dispatch(action.getProfile(username))
 
 })
 export default connect(mapStateToProps,mapDispatchToProps)(Profile)

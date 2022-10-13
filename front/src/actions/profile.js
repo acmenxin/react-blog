@@ -1,7 +1,7 @@
 import * as constant from "../constant"
 import request from "../request"
-
-export default getProfile =(username)=>{
+//点击头像展示用户信息
+export const getProfile =(username)=>{
     return async (dispatch,getState)=>{
         try {
           const result = await  request.profile.get(username)

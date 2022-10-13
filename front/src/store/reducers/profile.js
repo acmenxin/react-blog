@@ -1,5 +1,4 @@
 import * as constant from "../../constant"
-
 const iniState ={
     username:'',
     bio:'',
@@ -11,6 +10,7 @@ const iniState ={
 const profileReducer = (state=iniState,action)=>{
     switch (action.type) {
         case constant.PROFILE_GET_RESULT:
+            console.log(action.result,"action.result");
             if(action.result.status===1){ //根据后端返回数据写结果
              return   {...state,...action.result.data}
             }else{
@@ -19,6 +19,7 @@ const profileReducer = (state=iniState,action)=>{
         default:
             break;
     }
+    return state;
 }
 
 export default profileReducer

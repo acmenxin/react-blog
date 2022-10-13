@@ -14,7 +14,7 @@ const ButtonInfo = memo((props)=>{
         return(
             <button
               className="btn btn-sm  action-btn"
-            //   className={profile.following?"btn-secondary":'btn-outline-secondary'}
+              className={profile.following?"btn-secondary":'btn-outline-secondary'}
               >
             <i className="fa fa-user-plus"></i>
             {profile.following ? "取消关注":"添加关注"}

@@ -7,18 +7,13 @@ import {store} from "../../store";
 import { push,replace } from "connected-react-router";
 class Login extends PureComponent{
     changeEmail=(e)=>{
-        // console.log("onEmailChange1");
           this.props.onEmailChange("email",e.target.value)
       }
       changePassword=(e)=>{
-        // this.setState({
-        //   password:e.target.value
-        // })
         this.props.onPasswordChange("password",e.target.value)
       }
    onSubmitForm = (email,password)=>(e)=>{
     e.preventDefault()
-    // console.log(this.state);
     //网络接口请求 ： 注册
     this.props.onSubmitUser(email,password)
   }
