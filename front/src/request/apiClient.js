@@ -29,7 +29,6 @@ const getHeaders = ()=>{
         "Content-Type":contentType.JSON,
         "Authorization":`Token ${token}`
     }
-
     return headers
 }
 

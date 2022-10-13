@@ -13,6 +13,11 @@ const HeadeMenu =memo( ({currentUser})=>{
             <li className="nav-item">
                 <Link to='/setting' className="nav-link">设置</Link>
              </li>
+            <li className="nav-item">
+                <Link to={`/profile/${currentUser.username}`} className="nav-link" >
+                <img src={currentUser.avatar ||"https://yudafeng.github.io/static/default.png"} className="user-pic"/>
+                </Link>
+             </li>
             </ul>
         )
     } else {
