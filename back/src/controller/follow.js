@@ -26,12 +26,13 @@ const followController =async (req,res,next)=>{
         username:userA.username,
         email:userA.email,
         bio:userA.bio,
-        follow:true
+        following:true
       }
       res.status(200)
          .json({
             data:beConcerned,
-            messsage:"关注成功"
+            messsage:"关注成功",
+            status:1
          })
     } catch (error) {
         next(error)
@@ -58,12 +59,13 @@ const cancelController = async(req,res,next)=>{
         username:userA.username,
         email:userA.email,
         bio:userA.bio,
-        follow:false
+        following:false
       }
       res.status(200)
          .json({
             data:beConcerned,
-            messsage:"取关成功"
+            messsage:"取关成功",
+            status:1
          })
 }
 //判断当前登录的用户是否关注了该作者

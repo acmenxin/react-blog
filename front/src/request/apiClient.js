@@ -24,7 +24,7 @@ const token = getData("token")
 
 const getHeaders = ()=>{ 
     const token  = getData('token')
-    console.log('token',token)
+    // console.log('token',token)
     const headers  ={
         "Content-Type":contentType.JSON,
         "Authorization":`Token ${token}`

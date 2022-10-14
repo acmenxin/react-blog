@@ -4,3 +4,5 @@ export const USER_UNLOAD="USER_UNLOAD" //清理数据
 export const USER_LOGIN_RESULT="USER_LOGIN_RESULT" //登陆结果
 export const PROFILE_GET_RESULT="PROFILE_GET_RESULT" //用户信息获取结果
 export const USER_SYNC_RESULT = "USER_SYNC_RESULT" //同步用户信息
+export const PROFILE_POST_RESULT = "PROFILE_POST_RESULT" // 关注
+export const PROFILE_DELETE_RESULT = "PROFILE_DELETE_RESULT" // 取关
