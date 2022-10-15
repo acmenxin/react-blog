@@ -10,3 +10,9 @@ export const USER_UPDATE_RESULT = "USER_UPDATE_RESULT" // 更新个人信息
 export const USER_SETTING_LOGOUT = "USER_SETTING_LOGOUT" //退出登录
 export const ARTICLES_AUTHOR_RESULT = "ARTICLES_AUTHOR_RESULT " // 获取作者文章结果
 export const ARTICLES_LIKE_RESULT = "ARTICLES_LIKE_RESULT " // 获取作者喜欢的文章结果
+export const ARTICLE_UPDATE_FIELD = "ARTICLE_UPDATE_FIELD " // 新建文章字段同步
+export const ARTILE_ADD_TAG = "ARTILE_ADD_TAG " // 新建标签
+export const ARTILE_REMOVE_TAG = "ARTILE_REMOVE_TAG " // 移除标签
+export const ARTICLE_CREATE_RESULT = "ARTICLE_CREATE_RESULT " // 移除标签
+export const ARTICLE_UNLOAD = "ARTICLE_UNLOAD " // 移除标签
+

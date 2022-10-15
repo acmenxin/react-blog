@@ -10,7 +10,7 @@ const Login = lazy(()=>import("./pages/Login"))
 const Regist= lazy(()=>import("./pages/Regist"))
 const Profile = lazy(()=>import("./pages/profile"))
 const Setting = lazy(()=>import("./pages/Setting"))
-
+const ArticleNew = lazy(()=>import("./pages/ArticleNew"))
 
 //问题： 页面加载慢
 // 代码分割 => 并行 动态加载=> react 懒加载
@@ -28,6 +28,7 @@ class App extends PureComponent{
       <Route path="/regist" component={Regist} />
       <Route path="/setting" component={Setting} />
       <Route path="/profile/:username" component={Profile} />
+      <Route path="/article/new" component={ArticleNew} />
       </Switch>
       </Suspense>
 
