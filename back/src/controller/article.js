@@ -5,6 +5,27 @@ const randomSlug = require("../utils/slug")
 const Article = require("../model/artical")
 const Tag = require("../model/Tag");
 const sequelize = require("../db/sequelize");
+//封装喜欢信息
+const  getFavorite =  async (article,currentUser)=>{
+       
+    // 喜欢数量
+       const favoriteCount  = await article.countUsers() //获取喜欢文章人数量
+        
+       // 当前登录用户是否喜欢
+        const favoriteUsers  = await article.getUsers() //获取喜欢文章人 
+        let allFavoriteEmail  = []
+        for (const user of favoriteUsers) {
+           allFavoriteEmail.push(user.email)
+        }
+        
+        let favorited = false; //默认 没登陆 都显示未喜欢 ； 
+        if(currentUser){ //登录了则判断是否喜欢
+            let loginEmail =currentUser.email
+            favorited = allFavoriteEmail.includes(loginEmail)
+        }
+
+        return {favoriteCount,favorited}
+}
 //创建文章
 const createArticle = async(req,res,next)=>{
     try {
@@ -228,67 +249,190 @@ const destoryArticle = async(req,res,next)=>{
        next(error)
    }  
 }
+
+function handleArticle2(article,favoriteCount,favorited){
+    //处理tag
+    const tags = []
+    for (const tag of article.dataValues.Tags) {
+        // console.log(tag.name);
+        tags.push(tag.name)
+    }
+    article.dataValues.tags = tags
+    
+    //处理author
+    let author = article.dataValues.user
+    delete author.dataValues.password  //删除作者password 
+    delete article.dataValues.userEmail //删除文章userEmail
+    delete article.dataValues.user // 删除user
+    article.dataValues.author = author //追加处理好作者信息
+
+    //处理喜欢
+    article.dataValues.favoriteCount = favoriteCount //喜欢数量
+    article.dataValues.favorited = favorited //是否喜欢
+    
+    return article.dataValues
+}
 //获取关注作者们的文章
 const getFollowerArticle = async(req,res,next)=>{
     try {
-        //获取登录用户
-        const fansEmail = req.user.email;
-        //获取登陆用户关注的作者
-        const query = `SELECT userEmail FROM followers WHERE followorEmail = "${fansEmail}" `
-        const followAuthors = await sequelize.query(query) //是个email数组
-        //验证是否有关注的作者 :如果没有的话直接返回空数组
+        //获取粉丝email = 就是登录用户 
+        const fansEmail  = req.user.email //当前登录用户的email
+        //获取登录用户的关注的作者 ： follows 中间表
+        const query = `SELECT userEmail FROM followers WHERE followerEmail ="${fansEmail}"`
+        const followAuthors  = await sequelize.query(query)
+
+        //没有关注的作者 => 文章就是空数组[]
         if(followAuthors[0].length==0){
             return res.status(200)
-            .json({
-                statu:1,
-                message:"获取关注文章成功",
-                data:[]
-            })
+                .json({
+                    status:1,
+                    message:'获取关注文章成功',
+                    data:[]  //客户端不显示文章列表 会显示提示
+                })
         }
-        //有的话 => 先获取所有作者email [email1,email2]
-        let followAuthorEmails =[]
+        //有有关注的作者 => 获取所有作者email [emial1,email...]
+        //遍历email 获取作者email数组
+        let followAtuhorEmails = []
         for (const item of followAuthors[0]) {
-            followAuthorEmails.push(item.userEmail)
+            followAtuhorEmails.push(item.userEmail)
         }
-        // console.log(followAuthorEmails,"followAuthorEmails");
-        //再获取作者文章
-        let {count,rows} = await Article.findAndCountAll({
-            distinct:true,
+
+        // 思路 => 作者们的[email1,email2..]
+        // 获取每一个作者 的所有文章 （注意：每一篇文章都要有 标签和作者信息）
+        let {count,rows}  = await Article.findAndCountAll({
+            distinct:true, // 去重 =>精确数据
             where:{
-                userEmail:followAuthorEmails //可以直接等于一个数组
+                userEmail:followAtuhorEmails //可以直接等于一个数组
             },
             include:[Tag,User]
         })
-        // console.log(result,"result");  count:1,rows:[]
-        //处理每一个作者的每一篇文章
+        //处理每个一作者的每一个篇文章都要处理：标签和作者信息 
         const articles = []
-        for(const t of rows){
-            // console.log(t,"t");
-            //处理tags标签
-            const tags = []
-            for (const tag of t.dataValues.Tags) {
-                tags.push(tag.name)
-            }
-            t.dataValues.tags= tags;
-            //处理用户信息
-            let author = t.User
-            // console.log(author,"author");
-            delete author.dataValues.password
-            delete t.dataValues.UserEmail
-            delete t.dataValues.Tags
-            t.dataValues.author = author
-            //每一篇文章信息都存进数组中
-            articles.push(t.dataValues)
+        for (const t of rows) {
+            const {favoriteCount,favorited} = await getFavorite(t,req.user)
+            let handleArticle  = handleArticle2(t,favoriteCount,favorited)
+            articles.push(handleArticle)
         }
-        console.log(articles,"articles");
+
+        // console.log(articles);s
+
+        //响应数据
+        return res.status(200)
+        .json({
+            status:1,
+            message:'获取关注文章成功',
+            data:{articles,count}
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+//获取多个文章，全局查询：author,tag,limit,offset
+const getArticles = async(req,res,next)=>{
+    try {
+        const email = req.user?req.user.email:null
+        // 获取 author / tag / limit / offset   <=req.query
+        const {favorite,tag,author,limit=10,offset=0}  = req.query
+        let result ;
+        if(tag&&!author&&!favorite){ //标签过滤文章
+            result = await Article.findAndCountAll({
+                distinct:true,
+                include:[
+                    {model:Tag,attributes:['name'],where:{name:tag}},
+                    {model:User,attributes:['email','username','bio','avatar']}
+                ],
+                limit:parseInt(limit), //参数 都是字符串=>转化int
+                offset:parseInt(offset)
+            }) //批量查询
+        }
+        
+        if(author&&!tag&&!favorite){  //获取作者自己文章
+            result = await Article.findAndCountAll({
+                distinct:true,
+                include:[
+                    {model:Tag,attributes:['name']},
+                    {model:User,attributes:['email','username','bio','avatar'],where:{username:author}}
+                ],
+                limit:parseInt(limit), 
+                offset:parseInt(offset)
+            }) 
+
+        }
+        
+        if(tag&&author&&!favorite){//作者&标签
+            result = await Article.findAndCountAll({
+                distinct:true,
+                include:[
+                    {model:Tag,attributes:['name'],where:{name:tag}},
+                    {model:User,attributes:['email','username','bio','avatar'],where:{username:author}}
+                ],
+                limit:parseInt(limit), 
+                offset:parseInt(offset)
+            }) 
+
+        }
+        
+        //favorite = 作者，favorite标记 代表查询 作者 喜欢的文章
+        if(favorite&&!tag&&!author){//获取作者喜欢的文章
+            const authorName = favorite
+            const author = await User.findOne({
+                where:{username:authorName}
+            })
+            const authorEmail = author.email
+            const queryString = `SELECT articleSlug from favorites WHERE userEmail = "${authorEmail}"`
+            const queryResult = await sequelize.query(queryString)
+            console.log(queryResult)
+            if(queryResult[0].length===0){
+                return res.status(200)
+                          .json({
+                            status:1,
+                            message:'没有喜欢的文章',
+                            data:[]
+                          })
+            }
+
+            let artcileSlugs = []
+            for (const item of queryResult[0]) {
+                artcileSlugs.push(item.articleSlug)
+            }
+
+            result =  await Article.findAndCountAll({
+                distinct:true,
+                where:{
+                    slug:artcileSlugs
+                },
+                include:[Tag,User],
+            })
+            console.log(result)
+        }        
+        if(!tag&&!author&&!favorite){ //全局查询文章
+            result = await Article.findAndCountAll({
+                distinct:true,
+                include:[
+                    {model:Tag,attributes:['name']},
+                    {model:User,attributes:['email','username','bio','avatar']}
+                ],
+                limit:parseInt(limit), 
+                offset:parseInt(offset)
+            }) 
+        }
+        const {count,rows} = result
+        //count 总数 /  limit 一页数据  = 页码数据
+        // rows 文章需要处理
+        const articles = []
+        for (const t of rows) {
+            const {favoriteCount,favorited} = await getFavorite(t,req.user)
+            let handleArticle  = handleArticle2(t,favoriteCount,favorited)
+            articles.push(handleArticle)
+        }
         return res.status(200)
                   .json({
-                    message:"获取成功",
-                    data:articles
+                    status:1,
+                    message:'获取筛选文章成功',
+                    data:{articles,count}
                   })
     } catch (error) {
         next(error)
     }
 }
-
-module.exports={createArticle,getArticle,updataArticle,destoryArticle,getFollowerArticle}
+module.exports={createArticle,getArticle,updataArticle,destoryArticle,getFollowerArticle,getArticles}

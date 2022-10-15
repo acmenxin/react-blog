@@ -11,7 +11,7 @@ import profileReducer from "./profile"
 //更改为集成路由的方式
 const createRootReducer = (history)=>combineReducers({
     user:userReducer,
-    article:articleReducer,
+    articles:articleReducer,
     profile:profileReducer,
     router:connectRouter(history) //监听路由
 })

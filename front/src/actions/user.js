@@ -2,12 +2,12 @@ import * as constant from "../constant"
 import request from "../request"
 import { push } from "connected-react-router"
 
-//清理数据
+//跳转页面后清理数据
 export const unload = ()=>{
     return {type:constant.USER_UNLOAD}
 }
 
-//字段同步
+//输入字段同步
 export const registUpdate = (key,value)=>{
     return {type:constant.USER_REGIST,key,value}
 }
@@ -50,6 +50,24 @@ export const loginSubmit =(email,password)=>{
       
     }
 }
+//同步登录
 export const userSyncResult=(user)=>{
     return {type:constant.USER_SYNC_RESULT,result:user}
 }
+//更新提交
+export const updateSubmit=(user)=>{
+    return async(dispatch,getState)=>{
+        try {
+            const result = await request.user.update(user)
+            // console.log(result,"result");
+            dispatch({type:constant.USER_UPDATE_RESULT,result})
+        } catch (error) {
+            dispatch({type:constant.USER_UPDATE_RESULT,result:{status:0,message:error.message,errors:error.errors}})
+        }
+    }
+}
+//退出登录
+export const logout = ()=>{
+    return {type:constant.USER_SETTING_LOGOUT}
+  }
+  

@@ -143,7 +143,9 @@ const updateUser = async(req,res,next)=>{
         updateUser.dataValues.token = token;
         return res.status(200)
                   .json({
-                    data:updateUser.dataValues
+                    data:updateUser.dataValues,
+                    status:1,
+                    message:'更新成功'
                   })
     } catch (error) {
         next(error)

@@ -9,6 +9,7 @@ import Home from "./pages/Home"
 const Login = lazy(()=>import("./pages/Login"))
 const Regist= lazy(()=>import("./pages/Regist"))
 const Profile = lazy(()=>import("./pages/profile"))
+const Setting = lazy(()=>import("./pages/Setting"))
 
 
 //问题： 页面加载慢
@@ -25,6 +26,7 @@ class App extends PureComponent{
       <Route path="/" component={Home} exact/>
       <Route path="/login" component={Login} />
       <Route path="/regist" component={Regist} />
+      <Route path="/setting" component={Setting} />
       <Route path="/profile/:username" component={Profile} />
       </Switch>
       </Suspense>
