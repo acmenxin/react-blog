@@ -148,7 +148,8 @@ const getArticle = async(req,res,next)=>{
         return res.status(200)
                 .json({
                     message:"获取文章信息成功",
-                    data:article.dataValues
+                    data:article.dataValues,
+                    status:1
                 })
     } catch (error) {
         next(error)

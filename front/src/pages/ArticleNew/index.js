@@ -1,7 +1,6 @@
 import { PureComponent } from 'react'
 import {connect} from 'react-redux';
 import * as action  from '../../actions/article'
-import {Link} from 'react-router-dom'
 import Errors from '../../components/Errors'
 class ArticleNew extends PureComponent {
     changeTitle = (ev)=>{

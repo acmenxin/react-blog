@@ -22,5 +22,3 @@ export const getArticlesByFavorite =(username)=>{
         }
     }
 }
-
-

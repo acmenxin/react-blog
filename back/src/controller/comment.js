@@ -72,7 +72,7 @@ const getComments = async(req,res,next)=>{
         })
         // console.log(comments);
         return res.status(200).json({
-            statu:1,
+            status:1,
             message:"获取评论成功",
             data:comments
         })

@@ -12,7 +12,6 @@ export const articleFieldUpdate = (key,value)=>{
 export const articleAddTag = ()=>{
     return {type:constant.ARTILE_ADD_TAG}
 } 
-
 // 创建文章
 export const createArticle = (article)=>{
     return async (dispatch,getState)=>{
@@ -34,4 +33,64 @@ export const createArticle = (article)=>{
 export const articleRemoveTag = (tag)=>{
     return {type:constant.ARTILE_REMOVE_TAG,payload:tag}
 } 
+//获取文章
+export const getArticleBySlug = (slug)=>{
+    return async (dispatch,getState)=>{
+        try {
+           const result = await  request.article.get(slug)
+           dispatch({type:constant.ARTICLE_GET_RESULT,result})
+        } catch (error) { // 错误
+            console.log(error);
+            dispatch({type:constant.ARTICLE_GET_RESULT,result:{message:error.message,errors:error.errors}})
+        }
+        
+    }
+}
+// 删除文章
+export const deleteArticle = (slug)=>{
+    return async (dispatch,getState)=>{
+        try {
+           const result = await  request.article.delete(slug)
+           if(result.status===1){ 
+                dispatch(push(`/home`)) 
+            }else{// 失败 status 0
+                dispatch({type:constant.ARTICLE_DELETE_RESULT,result})
+            }
+        } catch (error) { // 错误
+            console.log(error);
+            dispatch({type:constant.ARTICLE_DELETE_RESULT,result:{message:error.message,errors:error.errors}})
+        }
+        
+    }
+}
+// 喜欢文章
+export const favoriteArticle = (slug)=>{
+    return async (dispatch,getState)=>{
+        try {
+           const result = await  request.article.favorite(slug)
+            console.log('action result',result)
+           dispatch({type:constant.ARTICLE_FAVORITE_RESULT,result})
+            
+        } catch (error) { // 错误
+            console.log(error);
+            dispatch({type:constant.ARTICLE_FAVORITE_RESULT,result:{message:error.message,errors:error.errors}})
+        }
+        
+    }
+}
+// 不喜欢文章
+export const unfavoriteArticle = (slug)=>{
+    return async (dispatch,getState)=>{
+        try {
+           const result = await  request.article.unfavorite(slug)
+           dispatch({type:constant.ARTICLE_FAVORITE_RESULT,result})
+        } catch (error) { // 错误
+            console.log(error);
+            dispatch({type:constant.ARTICLE_FAVORITE_RESULT,result:{message:error.message,errors:error.errors}})
+        }
+        
+    }
+}
+
+
 

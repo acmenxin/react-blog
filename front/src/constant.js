@@ -15,4 +15,13 @@ export const ARTILE_ADD_TAG = "ARTILE_ADD_TAG " // 新建标签
 export const ARTILE_REMOVE_TAG = "ARTILE_REMOVE_TAG " // 移除标签
 export const ARTICLE_CREATE_RESULT = "ARTICLE_CREATE_RESULT " // 移除标签
 export const ARTICLE_UNLOAD = "ARTICLE_UNLOAD " // 移除标签
+export const ARTICLE_GET_RESULT = "ARTICLE_GET_RESULT " // 获取文章结果
+export const ARTICLE_UPDATE_RESULT = "ARTICLE_UPDATE_RESULT " // 获取文章结果
+export const COMMENT_UPDATE_FIELD = "COMMENT_UPDATE_FIELD " // 评论字段同步
+export const COMMENT_CREATE_RESULT = "COMMENT_CREATE_RESULT " // 创建评论结果
+export const COMMENT_DELETE_RESULT = "COMMENT_DELETE_RESULT " // 创建评论结果
+export const COMMENTS_GET_RESULT = "COMMENTS_GET_RESULT " // 创建评论结果
+export const ARTICLE_DELETE_RESULT = "ARTICLE_DELETE_RESULT " // 删除文章结果
+export const ARTICLE_FAVORITE_RESULT = "ARTICLE_FAVORITE_RESULT " // 喜欢文章结果
+
 

@@ -11,7 +11,7 @@ const Regist= lazy(()=>import("./pages/Regist"))
 const Profile = lazy(()=>import("./pages/profile"))
 const Setting = lazy(()=>import("./pages/Setting"))
 const ArticleNew = lazy(()=>import("./pages/ArticleNew"))
-
+const Article = lazy(() => import('./pages/Article'))
 //问题： 页面加载慢
 // 代码分割 => 并行 动态加载=> react 懒加载
 // 页面无关的组件=>拆分成新的buddle=>当无关的组件被渲染的时候 才会下载到本地=>动态渲染
@@ -29,6 +29,7 @@ class App extends PureComponent{
       <Route path="/setting" component={Setting} />
       <Route path="/profile/:username" component={Profile} />
       <Route path="/article/new" component={ArticleNew} />
+      <Route path="/articles/:slug" component={Article} />
       </Switch>
       </Suspense>
 
